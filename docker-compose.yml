@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # The Backend API Service
+  backend-api:
+    build: ./backend
+    # Optional: For GPU acceleration (see note below)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    devices:
+      - "/dev/video0:/dev/video0" # Mount webcam into the container
+
+  # The Frontend Web Server Service
+  frontend-server:
+    build: ./frontend
+    ports:
+      - "8080:80"  # Map your computer's port 8080 to the container's port 80
+    depends_on:
+      - backend-api # Tells docker-compose to start the backend first

@@ -1,0 +1,8 @@
+# Ignore the Python virtual environment
+.venv
+venv
+*/__pycache__
+
+# Ignore IDE/editor-specific files
+.vscode/
+.idea/

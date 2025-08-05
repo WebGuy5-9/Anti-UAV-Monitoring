@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+ultralytics
+deep-sort-realtime
+opencv-python-headless
+
+
