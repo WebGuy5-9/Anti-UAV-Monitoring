@@ -1,24 +1,31 @@
-version: '3.8'
+# No "version" key is needed at the top.
 
 services:
   # The Backend API Service
   backend-api:
     build: ./backend
-    # Optional: For GPU acceleration (see note below)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # Use the 'x-' prefix for custom extensions if 'devices' under deploy doesn't work.
+    # The 'deploy' block is generally for swarm mode. For local GPU, this is more robust.
+    # UNCOMMENT THE FOLLOWING BLOCK IF YOU HAVE AN NVIDIA GPU and NVIDIA Container Toolkit installed.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all # "all" is often more reliable than "1"
+    #           capabilities: [gpu]
+
+    # Mount webcam into the container. This is for WEBCAM access.
+    # If you are using a video file, you can comment this out.
+    # Note: On Windows, webcam access can be tricky. This path is for Linux.
+    # You may need to find the specific device path for your system if this fails.
     devices:
-      - "/dev/video0:/dev/video0" # Mount webcam into the container
+      - "/dev/video0:/dev/video0"
 
   # The Frontend Web Server Service
   frontend-server:
     build: ./frontend
     ports:
-      - "8080:80"  # Map your computer's port 8080 to the container's port 80
+      - "8080:80"  # Map your host's port 8080 to the container's port 80
     depends_on:
-      - backend-api # Tells docker-compose to start the backend first
+      - backend-api # Ensures the backend starts before the frontend
