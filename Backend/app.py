@@ -1,6 +1,6 @@
 import cv2
-from flask import Flask, Response
 from ultralytics import YOLO
+from flask import Flask, Response, render_template_string
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 # --- Configuration ---
@@ -84,8 +84,8 @@ def index():
         </body>
     </html>
     """
-    # Note: Using Response instead of render_template_string for simplicity here
-    return Response(html_content, mimetype='text/html')
+    # This change processes the template, converting {{...}} into a real URL
+    return render_template_string(html_content)
 
 @app.route('/video_feed')
 def video_feed():
