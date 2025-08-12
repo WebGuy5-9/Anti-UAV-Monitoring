@@ -54,12 +54,16 @@ def generate_frames():
                 if not track.is_confirmed():
                     continue
                 track_id = track.track_id
+                # Get the class name from the tracker
+                class_name = track.get_det_class() 
                 l, t, r, b = track.to_ltrb()
                 l, t, r, b = int(l), int(t), int(r), int(b)
                 cv2.rectangle(frame, (l, t), (r, b), (0, 255, 0), 2)
-                cv2.putText(frame, f'ID: {track_id}', (l, t - 10),
+                # Create a new label that includes both the class name and the ID
+                label = f'{class_name} ID: {track_id}'
+                cv2.putText(frame, label, (l, t - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-            # --- End of processing logic ---
+                        # --- End of processing logic ---
 
             (flag, encodedImage) = cv2.imencode(".jpg", frame)
             if not flag:
