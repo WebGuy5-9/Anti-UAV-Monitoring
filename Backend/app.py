@@ -60,7 +60,7 @@ def generate_frames():
                 l, t, r, b = int(l), int(t), int(r), int(b)
                 cv2.rectangle(frame, (l, t), (r, b), (0, 255, 0), 2)
                 # Create a new label that includes both the class name and the ID
-                label = f'{class_name} ID: {track_id}'
+                label = f'{class_name}'
                 cv2.putText(frame, label, (l, t - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                         # --- End of processing logic ---
@@ -97,5 +97,7 @@ def video_feed():
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+# the bellow line says Only run the code inside this block if the script is executed directly with python app.py so I am removing this lin to be able  to use waitress-serve to run the app
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000, debug=True)
