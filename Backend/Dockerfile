@@ -18,5 +18,9 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 #    If you only change app.py, the build will be super fast from now on.
 COPY . /app
 
-# Command to run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Expose the port that Waitress will run on
+EXPOSE 5000
+
+# Command to run the application using the Waitress production server
+# (Assuming your backend uses Flask/Waitress on port 5000)
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=5000", "app:app"]
