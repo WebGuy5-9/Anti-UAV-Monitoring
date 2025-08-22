@@ -1,6 +1,8 @@
 # Use the official NGINX image
 FROM nginx:1.21-alpine
 
+RUN apk --no-cache upgrade
+
 # Copy your static files to the default NGINX public directory
 COPY ./static/ /usr/share/nginx/html/
 

@@ -5,7 +5,7 @@ import traceback
 
 # --- Configuration ---
 VIDEO_PATH = 0  # webcam
-MODEL_PATH = './yolov8n.pt'
+MODEL_PATH = './drone_detection.pt'
 CONFIDENCE_THRESHOLD = 0.5  # default confidence
 
 # --- Initialize Flask app ---
