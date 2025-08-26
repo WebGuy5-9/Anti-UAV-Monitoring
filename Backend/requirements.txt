@@ -1,9 +1,8 @@
-fastapi
 flask
-uvicorn[standard]
+waitress
 ultralytics
 deep-sort-realtime
 opencv-python-headless
-waitress
-
-    
+torch
+huggingface_hub
+safetensors
