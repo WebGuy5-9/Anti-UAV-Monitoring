@@ -3,6 +3,9 @@ from ultralytics import YOLO
 from flask import Flask, Response, render_template, request, jsonify
 import traceback
 
+# Import the uploaded video blueprint
+from uploaded_video import uploaded_video_bp
+
 # --- Configuration ---
 VIDEO_PATH = 0  # webcam
 MODEL_PATH = './drone_detection.pt'
@@ -72,6 +75,7 @@ def generate_frames():
             print(f"❌ Error encoding frame: {e}")
 
 
+
 # --- Routes ---
 @app.route('/')
 def index():
@@ -84,6 +88,7 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+
 @app.route('/update_confidence', methods=['POST'])
 def update_confidence():
     global CONFIDENCE_THRESHOLD
@@ -93,13 +98,22 @@ def update_confidence():
     if new_conf is not None:
         try:
             CONFIDENCE_THRESHOLD = float(new_conf)
+            uploaded_video_bp.confidence_threshold = CONFIDENCE_THRESHOLD
             print(f"⚙️ Updated confidence to {CONFIDENCE_THRESHOLD}")
             return jsonify({"status": "success", "confidence": CONFIDENCE_THRESHOLD})
         except ValueError:
             return jsonify({"status": "error", "message": "Invalid confidence"}), 400
     
-    return jsonify({"status": "error", "message": "confidence not provided"}), 400    
+    return jsonify({"status": "error", "message": "confidence not provided"}), 400  
 
+
+
+# --- Register the uploaded_video blueprint ---
+# Pass the YOLO model and confidence threshold to the blueprint by setting them as attributes or using current_app context
+uploaded_video_bp.model = model
+uploaded_video_bp.confidence_threshold = CONFIDENCE_THRESHOLD
+
+app.register_blueprint(uploaded_video_bp)
 
 if __name__ == '__main__':
     print("🚀 Starting Flask app on http://localhost:5000")
