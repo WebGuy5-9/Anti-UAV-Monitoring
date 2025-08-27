@@ -7,19 +7,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // e.g., connectWebSocket();
 });
 
-// Function to update the detections table
 function updateDetections(detections) {
-  const tbody = document.getElementById("detectionsBody");
-  tbody.innerHTML = ""; // Clear existing rows
-  detections.forEach((det) => {
-    const row = `<tr>
-                                <td>${det.id}</td>
-                                <td>${det.class}</td>
-                                <td>${(det.confidence * 100).toFixed(2)}%</td>
-                             </tr>`;
-    tbody.innerHTML += row;
-  });
+    const tbody = document.getElementById('detectionsBody');
+    tbody.innerHTML = ''; // clear existing
+    detections.forEach(det => {
+        const row = `<tr>
+                       <td>${det.id}</td>
+                       <td>${(det.confidence * 100).toFixed(2)}%</td>
+                     </tr>`;
+        tbody.innerHTML += row;
+    });
 }
+
 
 // Function to update metrics
 function updateMetrics(metrics) {

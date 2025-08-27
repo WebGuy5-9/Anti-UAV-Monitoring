@@ -74,6 +74,20 @@ def generate_frames():
         except Exception as e:
             print(f"❌ Error encoding frame: {e}")
 
+# def get_detections_info(results):
+#     detections = []
+#     if not results or len(results) == 0:
+#         return detections
+
+#     boxes = results[0].boxes  # Access detections in first result
+#     for i, box in enumerate(boxes):
+#         conf = box.conf.item()  # confidence as float
+#         detections.append({
+#             "id": i + 1,        # Simple numeric ID
+#             "confidence": conf  # Confidence score
+#         })
+#     return detections
+
 
 
 # --- Routes ---
@@ -106,6 +120,17 @@ def update_confidence():
     
     return jsonify({"status": "error", "message": "confidence not provided"}), 400  
 
+# @app.route('/detections_info')
+# def detections_info():
+#     # Capture one frame for info (or use a frame buffer)
+#     ret, frame = camera.read()
+#     if not ret:
+#         return jsonify({"detections": []})
+
+#     results = model.predict(frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
+#     detections = get_detections_info(results)
+
+#     return jsonify({"detections": detections})
 
 
 # --- Register the uploaded_video blueprint ---
