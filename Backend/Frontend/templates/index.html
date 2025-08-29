@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Anti-UAV Monitoring Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="app-header">
+        <h1>Anti-UAV Monitoring Dashboard</h1>
+      </header>
+
+      <main class="dashboard-grid">
+        <!-- Live Feed Panel -->
+        <section class="panel live-feed-panel">
+          <div class="panel-header">Live Camera Feed</div>
+          <div class="webcam-container">
+            <!-- This img tag now displays the video stream from your Flask server -->
+            <img src="/video_feed" class="video-stream" alt="Live Video Feed" />
+          </div>
+        </section>
+
+        <!-- Detections Table -->
+        <section class="panel detections-panel">
+          <div class="panel-header">Real-time Detections</div>
+          <div class="detections-table-container">
+            <table class="detections-table">
+              <thead>
+  <tr>
+    <th>ID</th>
+    <th>Confidence</th>
+  </tr>
+</thead>
+<tbody id="detectionsBody">
+  <!-- Rows populated dynamically -->
+</tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Metrics Panel -->
+        <section class="panel metrics-panel">
+          <div class="panel-header">System Metrics</div>
+          <div class="metrics-content">
+            <div class="metric-card">
+              <div class="metric-label">FPS</div>
+              <div class="metric-value" id="fpsValue">25.4</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Detections</div>
+              <div class="metric-value" id="dronesValue">7</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Avg Speed</div>
+              <div class="metric-value">
+                4.2 <span style="font-size: 0.8rem">px/fr</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Model</div>
+              <div class="metric-value" style="font-size: 1.1rem">
+                YOLOv8n.pt
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Controls Panel -->
+        <section class="panel controls-panel">
+          <div class="panel-header">Controls</div>
+          <div class="controls-content">
+            <div class="control-item">
+              <label>Tracking:</label>
+              <button class="toggle-btn" id="trackingBtn">ON</button>
+            </div>
+            <div class="control-item">
+              <label for="thresholdSlider">Confidence:</label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.5"
+                class="slider"
+                id="thresholdSlider"
+              />
+              <span class="threshold-value" id="thresholdValue">0.50</span>
+            </div>
+            <div class="control-buttons">
+              <button class="action-btn" id="uploadBtn">Upload Video</button>
+              <button class="action-btn" id="downloadBtn">Download Logs</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <!-- <script src="script.js -->
+    <!-- <script src="{{ url_for('static', filename='script.js') }}"></script> -->
+  </body>
+</html>
