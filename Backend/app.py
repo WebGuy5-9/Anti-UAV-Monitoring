@@ -14,8 +14,8 @@ CONFIDENCE_THRESHOLD = 0.5  # default confidence
 
 # --- Initialize Flask app ---
 app = Flask(__name__,
-            template_folder="../Frontend/templates",
-            static_folder="../Frontend/static")
+            template_folder="./Frontend/templates",
+            static_folder="./Frontend/static")
 
 # --- Load YOLO model ---
 try:
