@@ -2,6 +2,7 @@ import cv2
 from ultralytics import YOLO
 from flask import Flask, Response, render_template, request, jsonify
 import traceback
+from flask import current_app
 
 # Import the uploaded video blueprint
 from uploaded_video import uploaded_video_bp
@@ -37,10 +38,8 @@ else:
     print("📹 Camera opened successfully!")
 
 
-def generate_frames():
-    """Generator that captures frames, runs YOLO, and streams MJPEG"""
-    global CONFIDENCE_THRESHOLD
 
+def generate_frames():
     if model is None or not camera.isOpened():
         print("❌ No model or camera unavailable")
         return
@@ -51,43 +50,23 @@ def generate_frames():
             print("❌ Failed to read frame from camera")
             break
 
-        try:
-            # Run YOLO detection
-            results = model.predict(frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
+        confidence_threshold = current_app.config.get('CONFIDENCE_THRESHOLD', 0.5)
 
+        try:
+            results = model.predict(frame, conf=confidence_threshold, verbose=False)
             if results and len(results) > 0:
-                result = results[0]
-                annotated_frame = result.plot()  # already BGR
+                    annotated_frame = results[0].plot()
             else:
-                annotated_frame = frame
+                    annotated_frame = frame
         except Exception as e:
             print(f"❌ Error during detection: {e}")
             annotated_frame = frame
 
-        try:
-            # Encode frame as JPEG
-            flag, encodedImage = cv2.imencode(".jpg", annotated_frame)
-            if flag:
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' +
-                       bytearray(encodedImage) + b'\r\n')
-        except Exception as e:
-            print(f"❌ Error encoding frame: {e}")
-
-# def get_detections_info(results):
-#     detections = []
-#     if not results or len(results) == 0:
-#         return detections
-
-#     boxes = results[0].boxes  # Access detections in first result
-#     for i, box in enumerate(boxes):
-#         conf = box.conf.item()  # confidence as float
-#         detections.append({
-#             "id": i + 1,        # Simple numeric ID
-#             "confidence": conf  # Confidence score
-#         })
-#     return detections
-
+        flag, encodedImage = cv2.imencode(".jpg", annotated_frame)
+        if flag:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
 
 
 # --- Routes ---
@@ -105,36 +84,20 @@ def video_feed():
 
 @app.route('/update_confidence', methods=['POST'])
 def update_confidence():
-    global CONFIDENCE_THRESHOLD
     data = request.get_json()
     new_conf = data.get('confidence')
-
-    if new_conf is not None:
+    if new_conf:
         try:
-            CONFIDENCE_THRESHOLD = float(new_conf)
-            uploaded_video_bp.confidence_threshold = CONFIDENCE_THRESHOLD
-            print(f"⚙️ Updated confidence to {CONFIDENCE_THRESHOLD}")
-            return jsonify({"status": "success", "confidence": CONFIDENCE_THRESHOLD})
+            conf_val = float(new_conf)
+            app.config['CONFIDENCE_THRESHOLD'] = conf_val
+            print(f"⚙️ Updated confidence: {conf_val}")
+            return jsonify({"status": "success", "confidence": conf_val})
         except ValueError:
             return jsonify({"status": "error", "message": "Invalid confidence"}), 400
-    
-    return jsonify({"status": "error", "message": "confidence not provided"}), 400  
-
-# @app.route('/detections_info')
-# def detections_info():
-#     # Capture one frame for info (or use a frame buffer)
-#     ret, frame = camera.read()
-#     if not ret:
-#         return jsonify({"detections": []})
-
-#     results = model.predict(frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
-#     detections = get_detections_info(results)
-
-#     return jsonify({"detections": detections})
+    return jsonify({"status": "error", "message": "confidence not provided"}), 400
 
 
-# --- Register the uploaded_video blueprint ---
-# Pass the YOLO model and confidence threshold to the blueprint by setting them as attributes or using current_app context
+
 uploaded_video_bp.model = model
 uploaded_video_bp.confidence_threshold = CONFIDENCE_THRESHOLD
 

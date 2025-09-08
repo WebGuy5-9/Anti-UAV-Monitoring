@@ -45,21 +45,6 @@ function initializeControls() {
     // TODO: Send this new threshold value to the backend
   });
 
-  // // Upload video button
-  // document.getElementById('uploadBtn').addEventListener('click', function() {
-  //     const input = document.createElement('input');
-  //     input.type = 'file';
-  //     input.accept = 'video/*';
-  //     input.onchange = function(e) {
-  //         const file = e.target.files[0];
-  //         if (file) {
-  //             alert(`File selected: ${file.name}. Upload functionality to be implemented.`);
-  //             // TODO: Implement the logic to upload the video file to the server.
-  //         }
-  //     };
-  //     input.click();
-  // });
-
   document.getElementById("uploadBtn").addEventListener("click", function () {
     const input = document.createElement("input");
     input.type = "file";
@@ -133,23 +118,68 @@ function downloadFile(filename, content) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-// code for implimenting confidnce slider
+
+// async function sendConfidenceToServer(confidenceValue) {
+//   try {
+//     const response = await fetch("/update_confidence", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ confidence: confidenceValue }),
+//     });
+//     const data = await response.json();
+//     if (data.status === "success") {
+//       console.log("Confidence updated successfully to:", data.confidence);
+//       // Reload video stream to apply new confidence value
+//       const videoElem = document.querySelector(".video-stream");
+//       const currentSrc = videoElem.src;
+//       videoElem.src = "";          // Clear current video src (stop stream)
+//       setTimeout(() => {
+//         videoElem.src = currentSrc;  // Restore src to restart stream with updated confidence
+//       }, 100);
+//     } else {
+//       console.error("Failed to update confidence:", data.message);
+//     }
+//   } catch (error) {
+//     console.error("Error sending confidence update:", error);
+//   }
+// }
+let debounceTimeout = null;
+
 async function sendConfidenceToServer(confidenceValue) {
-  try {
-    const response = await fetch("/update_confidence", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ confidence: confidenceValue }),
-    });
-    const data = await response.json();
-    if (data.status === "success") {
-      console.log("Confidence updated successfully to:", data.confidence);
-    } else {
-      console.error("Failed to update confidence:", data.message);
+  // Clear previous debounce timer
+  if (debounceTimeout) clearTimeout(debounceTimeout);
+
+  // Debounce: delay sending update until 300ms after last input change
+  debounceTimeout = setTimeout(async () => {
+    try {
+      const response = await fetch("/update_confidence", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confidence: confidenceValue }),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        console.log("Confidence updated successfully to:", data.confidence);
+
+        // Smooth reload of video stream to apply new confidence without abrupt stops
+        const videoElem = document.querySelector(".video-stream");
+        videoElem.style.visibility = "hidden";  // Hide video temporarily
+        const currentSrc = videoElem.src;
+        videoElem.src = "";  // Stop current stream
+        setTimeout(() => {
+          videoElem.src = currentSrc;  // Reload stream with new confidence
+          videoElem.style.visibility = "visible";  // Show video again
+        }, 200);  // 200ms delay for graceful reload
+      } else {
+        console.error("Failed to update confidence:", data.message);
+      }
+    } catch (error) {
+      console.error("Error sending confidence update:", error);
     }
-  } catch (error) {
-    console.error("Error sending confidence update:", error);
-  }
+  }, 300);  // Wait 300ms after last slider change before sending
 }
+
