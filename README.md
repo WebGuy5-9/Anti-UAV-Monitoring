@@ -13,5 +13,7 @@ Future Work:
 Integrating Depth-Anything v2 for depth estimation — aiming to convert colormap outputs into real-world distance values for precise spatial awareness.
 Deploying the detection and depth estimation models on edge devices such as Raspberry Pi and NVIDIA Jetson Nano for efficient, on-device inference in real-time environments.
 
-Demo Video:https://drive.google.com/file/d/1qKfXWvgYCwTD32tlNsUtYUIqKOFkZQAT/view?usp=sharing
+[![Watch the demo](<img width="1879" height="1055" alt="Screenshot 2025-11-11 120025" src="https://github.com/user-attachments/assets/83fe5a9b-8279-48bf-a76e-6501376cc296" />)](https://drive.google.com/file/d/1qKfXWvgYCwTD32tlNsUtYUIqKOFkZQAT/view?usp=sharing)
+
+
 
